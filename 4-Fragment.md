@@ -339,11 +339,15 @@ public class RightFragment extends Fragment {
 
 ### 1. 使用限定符
 
-在Android 中往往通过使用限定符（Qualifiers）判断程序应该是使用双页模式还是单页模式。
+在 Android 中往往通过使用限定符（Qualifiers）判断程序应该是使用双页模式还是单页模式。 Android 中常见的限定符可以参看下表。
 
+<img src="Images/4-6.png" width="80%;" /><img src="Images/4-7.png" width="80%;" />
 
+### 2.使用最小宽度限定符
 
+当我们希望可以更加灵活地为不同设备加载布局，不管它们究竟被系统认为是什么限定符，此时可以使用最小宽度限定符（Smallest-width-Qualifier）。
 
+最小宽度限定符允许我们对屏幕的宽度指定为一个最小值（以 dp 为单位），然后以这个最小值为临界点，屏幕宽度大于这个值的设备就加载一个布局，屏幕宽度小于这个值的设备就加载另一个布局。
 
 
 

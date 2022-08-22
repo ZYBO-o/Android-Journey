@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">5-Fragment</string>
+    <string name="right_fragment">This is right fragment</string>
+    <string name="another_right_fragment">This is another right fragment</string>
+</resources>

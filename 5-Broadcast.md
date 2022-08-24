@@ -123,9 +123,63 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 
 ### 1. 发送标准广播
 
+1. 首先建一个广播接收器准备接收广播，新建为MyBroadcastReceiver：
 
+```java
+public class MyBroadcastReceiver extends BroadcastReceiver {
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Toast.makeText(context,"Receive MyBroadcastReceiver!", Toast.LENGTH_SHORT).show();
+    }
+}
+```
 
+2. 在 AndroidManifest.xml中对这个广播接收器进行注册。这里让 `MyBroadcastReceiver` 接收 一条值为 `com.example.broadcasttest.MY_BROADCAST` 的广播，因此待会儿在发送广播的时候，我们就需要发出这样的一条广播。
+
+```xml
+<receiver
+		android:name=".AnotherBroadcastReceiver"
+    android:enabled="true"
+    android:exported="true">
+    <!-- 添加内容 -->  
+     <intent-filter>
+     	 	<action android:name="com.example.broadcasttest.MY_BROADCAST"/>
+     </intent-filter>
+     <!-- 添加结束 -->
+</receiver>
+```
+
+3. 在布局文件中定义了一个按钮，用于作为发送广播的触发点。
+
+```xml
+<Button
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="send"
+        tools:ignore="MissingConstraints" />
+```
+
+4. 在按钮的点击事件里面加入了发送自定义广播的逻辑。首先构建出了一 个 Intent 对象，并把要发送的广播的值传入，然后调用了 Context 的 `sendBroadcast()` 方法将广 播发送出去，这样所有监听 `com.example.broadcasttest.MY_BROADCAST` 这条广播的广播接收器就会收到消息。
+
+```java
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Button button=findViewById(R.id.btn);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent("com.example.broadcasttest.MY_BROADCAST");
+                sendBroadcast(intent);
+            }
+        });
+    }
+}
+```
 
 ### 2.发送有序广播
 

@@ -183,17 +183,90 @@ public class MainActivity extends AppCompatActivity {
 
 ### 2.发送有序广播
 
+广播是一种可以跨进程的通信方式，这一点从前面接收系统广播的时候就可以看出来 了。因此在我们应用程序内发出的广播，其他的应用程序应该也是可以收到的。
 
+新创建项目后可以创建 BroadCast ，并进行注册，有序广播中广播接收器是有先后顺序的，而且前面的广播接收器还可以将广播截断，以阻止其继续传播。
 
+通过 `android:priority` 属性给广播接收器设置了优先级，优先级比较高的广播接收器就可以先收到广播。
 
+```xml
+<!-- 优先级设成了 100 -->
+<intent-filter android:priority="100">
+```
+
+发送有序广播只需要改动一行代码，即将 `sendBroadcast()` 方法改成 `sendOrderedBroadcast()` 方法。 `sendOrderedBroadcast()` 方法接收两个参数，第一个参数仍然是 `Intent` ，第二个参数是一个与权限相关的字符串，这里传入 `null` 就行了。
+
+```java
+ public void onClick(View v) {
+                Intent intent=new Intent("com.example.broadcasttest.MY_BROADCAST");
+                //发送一条有序广播
+                sendOrderedBroadcast(intent,null);
+}
+
+```
+
+如果在 `onReceive()` 方法中调用了 `abortBroadcast()` 方法，就表示将这条广播截断，后面的 广播接收器将无法再接收到这条广播。
 
 ---
 
 ## 四.使用本地广播
 
+系统全局广播容易引发安全性问题，所以 Android 引入了一套本地广播机制，只能在应用程序的内部进行传播，而且广播接收器也只能接收来自本应用程序发出的广播，则安全性问题就不存在了。
 
+本地广播是无法通过静态注册的方式来接受的，因为在发送本地广播时，程序肯定已经启动了，无需静态注册的功能。
 
+本地广播的用法并不复杂，主要就是使用了一个 `LocalBroadcastManager` 来对广播进行管理，并提供了发送广播和注册广播接收器的方法。
 
+```java
+public class MainActivity extends AppCompatActivity {
+    private IntentFilter intentFilter;
+    private LocalReceiver localReceiver;
+    private LocalBroadcastManager localBroadcastManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);//得到实例
+        Button button = findViewById(R.id.btn);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("com.example.broadcasttest.LOCAL_BROADCAST");
+                localBroadcastManager.sendBroadcast(intent);//发送广播
+                sendBroadcast(intent);
+            }
+        });
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("com.example.broadcasttest.LOCAL_BROADCAST");
+        localReceiver = new LocalReceiver();
+        localBroadcastManager.registerReceiver(localReceiver, intentFilter);//注册广播接收器
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        localBroadcastManager.unregisterReceiver(localReceiver);
+    }
+		//接受广播
+    class LocalReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "received local broacast", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+```
+
+和前面的动态注册广播十分相似。
+
+```xml
+ <intent-filter>
+		<!-- 进行注册 -->
+		<action android:name="com.example.broadcasttest.LOCAL_BROADCAST"/>
+</intent-filter>
+
+```
 
 
 
